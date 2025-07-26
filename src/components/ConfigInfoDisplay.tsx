@@ -22,9 +22,9 @@ export default function ConfigInfoDisplay({ config, showAllCodes }: ConfigInfoDi
         </h2>
         <div className="space-y-3">
           <div className="flex justify-between items-center py-2 border-b border-gray-200 dark:border-gray-700">
-            <span className="text-gray-600 dark:text-gray-400">游戏版本</span>
+            <span className="text-gray-600 dark:text-gray-400">SAA版本</span>
             <span className="font-mono font-semibold text-blue-600 dark:text-blue-400">
-              {config.gameVersion}
+              {config.version}
             </span>
           </div>
           <div className="flex justify-between items-center py-2 border-b border-gray-200 dark:border-gray-700">

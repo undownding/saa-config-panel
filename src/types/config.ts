@@ -58,9 +58,9 @@ export class RedeemCode {
 
 // 游戏配置类型
 export class GameConfig {
-  @IsString({ message: 'gameVersion must be a string' })
-  @IsNotEmpty({ message: 'gameVersion cannot be empty' })
-  gameVersion!: string;
+  @IsString({ message: 'version must be a string' })
+  @IsNotEmpty({ message: 'version cannot be empty' })
+  version!: string;
 
   @ValidateNested()
   @Type(() => UpdateData)

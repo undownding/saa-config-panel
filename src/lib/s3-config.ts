@@ -114,9 +114,9 @@ export function validateConfigLegacy(config: unknown): ValidationResult {
   // 类型断言用于兼容性
   const configData = config as Record<string, unknown>;
 
-  // 验证 gameVersion
-  if (!configData.gameVersion || typeof configData.gameVersion !== 'string') {
-    errors.push('gameVersion must be a string');
+  // 验证 version
+  if (!configData.version || typeof configData.version !== 'string') {
+    errors.push('version must be a string');
   }
 
   // 验证 updateData

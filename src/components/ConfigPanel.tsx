@@ -138,7 +138,7 @@ export default function ConfigPanel() {
 
           {config && (
             <div className="text-sm text-gray-600 dark:text-gray-400">
-              游戏版本: <span className="font-mono font-semibold">{config.gameVersion}</span>
+              SAA版本: <span className="font-mono font-semibold">{config.version}</span>
             </div>
           )}
         </div>

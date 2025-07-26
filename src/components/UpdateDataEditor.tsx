@@ -13,18 +13,21 @@ export default function UpdateDataEditor({ config, onUpdate }: UpdateDataEditorP
   const [isEditing, setIsEditing] = useState(false);
   const [editingData, setEditingData] = useState<UpdateData>(config.updateData);
   const [editingGameVersion, setEditingGameVersion] = useState<string>(config.version);
+  const [editingTaskName, setEditingTaskName] = useState<string>(config.questName);
   const [token, setToken] = useState('');
   const [loading, setLoading] = useState(false);
 
   const startEditing = () => {
     setEditingData({ ...config.updateData });
     setEditingGameVersion(config.version);
+    setEditingTaskName(config.questName);
     setIsEditing(true);
   };
 
   const cancelEditing = () => {
     setEditingData(config.updateData);
     setEditingGameVersion(config.version);
+    setEditingTaskName(config.questName);
     setIsEditing(false);
     setToken('');
   };
@@ -52,6 +55,7 @@ export default function UpdateDataEditor({ config, onUpdate }: UpdateDataEditorP
     setLoading(true);
     const newConfig = {
       ...config,
+      questName: editingTaskName,
       version: editingGameVersion,
       updateData: editingData
     };
@@ -73,7 +77,7 @@ export default function UpdateDataEditor({ config, onUpdate }: UpdateDataEditorP
             <span>⚙️</span>
             更新数据配置
           </h2>
-          
+
           {!isEditing ? (
             <button
               onClick={startEditing}
@@ -124,8 +128,27 @@ export default function UpdateDataEditor({ config, onUpdate }: UpdateDataEditorP
           <span>🎮</span>
           基本设置
         </h3>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              任务名称
+            </label>
+            {isEditing ? (
+              <input
+                type="text"
+                value={editingTaskName}
+                onChange={(e) => setEditingTaskName(e.target.value)}
+                placeholder="例如: 理念求索"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white font-mono"
+              />
+            ) : (
+              <div className="px-3 py-2 bg-gray-50 dark:bg-gray-700 rounded-md font-mono font-semibold">
+                {config.questName}
+              </div>
+            )}
+          </div>
+
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               SAA版本
@@ -231,7 +254,7 @@ export default function UpdateDataEditor({ config, onUpdate }: UpdateDataEditorP
           <span>📦</span>
           Stuff 位置配置
         </h3>
-        
+
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -319,7 +342,7 @@ export default function UpdateDataEditor({ config, onUpdate }: UpdateDataEditorP
           <span>🕳️</span>
           Chasm 位置配置
         </h3>
-        
+
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">

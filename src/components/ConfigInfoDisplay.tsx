@@ -22,6 +22,12 @@ export default function ConfigInfoDisplay({ config, showAllCodes }: ConfigInfoDi
         </h2>
         <div className="space-y-3">
           <div className="flex justify-between items-center py-2 border-b border-gray-200 dark:border-gray-700">
+            <span className="text-gray-600 dark:text-gray-400">任务名称</span>
+            <span className="font-mono font-semibold text-purple-600 dark:text-purple-400">
+              {config.questName}
+            </span>
+          </div>
+          <div className="flex justify-between items-center py-2 border-b border-gray-200 dark:border-gray-700">
             <span className="text-gray-600 dark:text-gray-400">SAA版本</span>
             <span className="font-mono font-semibold text-blue-600 dark:text-blue-400">
               {config.version}
@@ -139,7 +145,7 @@ export default function ConfigInfoDisplay({ config, showAllCodes }: ConfigInfoDi
             </span>
           )}
         </h2>
-        
+
         {config.redeemCodes.length === 0 ? (
           <div className="text-center py-8 text-gray-500 dark:text-gray-400">
             暂无兑换码
@@ -149,7 +155,7 @@ export default function ConfigInfoDisplay({ config, showAllCodes }: ConfigInfoDi
             {(showAllCodes ? config.redeemCodes : validCodes).map((code, index) => {
               const isExpired = new Date(code.expiredAt) <= now;
               const expiryDate = new Date(code.expiredAt);
-              
+
               return (
                 <div
                   key={index}

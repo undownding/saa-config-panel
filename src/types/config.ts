@@ -1,10 +1,10 @@
-import { 
-  IsString, 
-  IsNumber, 
-  IsArray, 
-  ValidateNested, 
+import {
+  IsString,
+  IsNumber,
+  IsArray,
+  ValidateNested,
   IsDateString,
-  IsNotEmpty 
+  IsNotEmpty
 } from 'class-validator';
 import { Type } from 'class-transformer';
 
@@ -58,6 +58,10 @@ export class RedeemCode {
 
 // 游戏配置类型
 export class GameConfig {
+  @IsString({ message: 'questName must be a string' })
+  @IsNotEmpty({ message: 'questName cannot be empty' })
+  questName!: string;
+
   @IsString({ message: 'version must be a string' })
   @IsNotEmpty({ message: 'version cannot be empty' })
   version!: string;

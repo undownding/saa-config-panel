@@ -1,0 +1,35 @@
+{
+  "gameVersion": "1.0.0",
+  "updateData": {
+    "onlineWidth": 2560,
+    "onlineHeight": 1440,
+    "stuff": {
+      "x1": 209,
+      "y1": 850,
+      "x2": 270,
+      "y2": 883
+    },
+    "chasm": {
+      "x1": 209,
+      "y1": 850,
+      "x2": 270,
+      "y2": 883
+    },
+    "linkId": 7131,
+    "linkCatId": 282
+  },
+  "redeemCodes": [
+    {
+      "code": "ACTIVE_CODE_2025",
+      "expiredAt": "2025-12-31T23:59:59Z"
+    },
+    {
+      "code": "EXPIRED_CODE_2023",
+      "expiredAt": "2023-10-01T00:00:00Z"
+    },
+    {
+      "code": "ANOTHER_ACTIVE_CODE",
+      "expiredAt": "2025-08-01T00:00:00Z"
+    }
+  ]
+}

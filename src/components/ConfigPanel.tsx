@@ -20,20 +20,20 @@ export default function ConfigPanel() {
     try {
       setLoading(true);
       setError(null);
-      
+
       const url = `/api/config${allCodes ? '?allCodes=true' : ''}`;
       const response = await fetch(url);
-      
+
       if (!response.ok) {
         throw new Error(`获取配置失败: ${response.status} ${response.statusText}`);
       }
-      
+
       const data = await response.json();
-      
+
       if (data.status === 'error') {
         throw new Error(data.message || '获取配置失败');
       }
-      
+
       setConfig(data.data);
     } catch (err) {
       setError(err instanceof Error ? err.message : '未知错误');
@@ -65,7 +65,7 @@ export default function ConfigPanel() {
       }
 
       const data = await response.json();
-      
+
       if (data.status === 'error') {
         throw new Error(data.message || '更新配置失败');
       }
@@ -107,9 +107,9 @@ export default function ConfigPanel() {
     <div className="max-w-6xl mx-auto">
       {/* 错误提示 */}
       {error && (
-        <ErrorAlert 
-          message={error} 
-          onDismiss={() => setError(null)} 
+        <ErrorAlert
+          message={error}
+          onDismiss={() => setError(null)}
         />
       )}
 
@@ -135,7 +135,7 @@ export default function ConfigPanel() {
               显示所有兑换码（包括过期的）
             </label>
           </div>
-          
+
           {config && (
             <div className="text-sm text-gray-600 dark:text-gray-400">
               游戏版本: <span className="font-mono font-semibold">{config.gameVersion}</span>
@@ -154,7 +154,7 @@ export default function ConfigPanel() {
           ].map((tab) => (
             <button
               key={tab.key}
-              onClick={() => setActiveTab(tab.key as any)}
+              onClick={() => setActiveTab(tab.key as 'info' | 'redeem' | 'update')}
               className={`py-2 px-1 border-b-2 font-medium text-sm flex items-center gap-2 ${
                 activeTab === tab.key
                   ? 'border-blue-500 text-blue-600 dark:text-blue-400'
@@ -172,23 +172,23 @@ export default function ConfigPanel() {
       {config && (
         <div className="space-y-6">
           {activeTab === 'info' && (
-            <ConfigInfoDisplay 
-              config={config} 
+            <ConfigInfoDisplay
+              config={config}
               showAllCodes={showAllCodes}
               onRefresh={handleRefresh}
             />
           )}
-          
+
           {activeTab === 'redeem' && (
-            <RedeemCodeManager 
+            <RedeemCodeManager
               config={config}
               onUpdate={updateConfig}
               showAllCodes={showAllCodes}
             />
           )}
-          
+
           {activeTab === 'update' && (
-            <UpdateDataEditor 
+            <UpdateDataEditor
               config={config}
               onUpdate={updateConfig}
             />

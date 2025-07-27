@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { GameConfig, RedeemCode } from '@/types/config';
 import LoadingSpinner from './LoadingSpinner';
 import { getSavedBearerToken, saveBearerToken } from '@/lib/token-storage';
+import { TimeUtils } from '@/lib/time-utils';
 
 interface RedeemCodeManagerProps {
   config: GameConfig;
@@ -18,10 +19,9 @@ export default function RedeemCodeManager({ config, onUpdate, showAllCodes }: Re
   const [token, setToken] = useState('');
   const [loading, setLoading] = useState(false);
 
-  // 计算过期和有效的兑换码
-  const now = new Date();
-  const validCodes = config.redeemCodes.filter(code => new Date(code.expiredAt) > now);
-  const expiredCodes = config.redeemCodes.filter(code => new Date(code.expiredAt) <= now);
+  // 计算过期和有效的兑换码 - 使用 UTC 时间比较
+  const validCodes = config.redeemCodes.filter(code => !TimeUtils.isExpired(code.expiredAt));
+  const expiredCodes = config.redeemCodes.filter(code => TimeUtils.isExpired(code.expiredAt));
   const displayCodes = showAllCodes ? config.redeemCodes : validCodes;
 
   // 组件挂载时加载保存的 token
@@ -50,7 +50,12 @@ export default function RedeemCodeManager({ config, onUpdate, showAllCodes }: Re
 
   const addNewCode = () => {
     if (newCode.code.trim() && newCode.expiredAt) {
-      setEditingCodes([...editingCodes, { ...newCode, code: newCode.code.trim() }]);
+      // 将本地时间转换为 UTC 时间存储
+      const utcExpiredAt = TimeUtils.localDatetimeLocalToUtc(newCode.expiredAt);
+      setEditingCodes([...editingCodes, {
+        code: newCode.code.trim(),
+        expiredAt: utcExpiredAt
+      }]);
       setNewCode({ code: '', expiredAt: '' });
     }
   };
@@ -61,7 +66,12 @@ export default function RedeemCodeManager({ config, onUpdate, showAllCodes }: Re
 
   const updateCode = (index: number, field: keyof RedeemCode, value: string) => {
     const updated = [...editingCodes];
-    updated[index] = { ...updated[index], [field]: value };
+    if (field === 'expiredAt') {
+      // 将本地时间转换为 UTC 时间存储
+      updated[index] = { ...updated[index], [field]: TimeUtils.localDatetimeLocalToUtc(value) };
+    } else {
+      updated[index] = { ...updated[index], [field]: value };
+    }
     setEditingCodes(updated);
   };
 
@@ -89,11 +99,9 @@ export default function RedeemCodeManager({ config, onUpdate, showAllCodes }: Re
     setLoading(false);
   };
 
-  // 获取默认的过期时间（7天后）
+  // 获取默认的过期时间（7天后）- 返回本地时间格式
   const getDefaultExpiryDate = () => {
-    const date = new Date();
-    date.setDate(date.getDate() + 7);
-    return date.toISOString().slice(0, 16); // YYYY-MM-DDTHH:mm format
+    return TimeUtils.getDefaultExpiryDateLocal(7);
   };
 
   return (
@@ -196,8 +204,8 @@ export default function RedeemCodeManager({ config, onUpdate, showAllCodes }: Re
                   type="datetime-local"
                   value={newCode.expiredAt}
                   onChange={(e) => setNewCode({ ...newCode, expiredAt: e.target.value })}
-                  min={new Date().toISOString().slice(0, 16)}
-                  defaultValue={getDefaultExpiryDate()}
+                  min={TimeUtils.getCurrentLocalDatetimeLocal()}
+                  placeholder={getDefaultExpiryDate()}
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
                 />
               </div>
@@ -218,8 +226,8 @@ export default function RedeemCodeManager({ config, onUpdate, showAllCodes }: Re
       {/* 兑换码列表 */}
       <div className="space-y-3">
         {(isEditing ? editingCodes : displayCodes).map((code, index) => {
-          const isExpired = new Date(code.expiredAt) <= now;
-          const expiryDate = new Date(code.expiredAt);
+          const isExpired = TimeUtils.isExpired(code.expiredAt);
+          const timeUntilExpiry = TimeUtils.getTimeUntilExpiry(code.expiredAt);
 
           return (
             <div
@@ -249,8 +257,9 @@ export default function RedeemCodeManager({ config, onUpdate, showAllCodes }: Re
                     </label>
                     <input
                       type="datetime-local"
-                      value={code.expiredAt.slice(0, 16)}
-                      onChange={(e) => updateCode(index, 'expiredAt', e.target.value + ':00.000Z')}
+                      value={TimeUtils.utcToLocalDatetimeLocal(code.expiredAt)}
+                      onChange={(e) => updateCode(index, 'expiredAt', e.target.value)}
+                      min={TimeUtils.getCurrentLocalDatetimeLocal()}
                       className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
                     />
                   </div>
@@ -278,22 +287,16 @@ export default function RedeemCodeManager({ config, onUpdate, showAllCodes }: Re
                           ? 'text-red-600 dark:text-red-400'
                           : 'text-green-600 dark:text-green-400'
                       }`}>
-                        {isExpired ? '已过期' : '有效'}
+                        {timeUntilExpiry}
                       </div>
                     </div>
                   </div>
                   <div className="text-right">
                     <div className="text-sm text-gray-600 dark:text-gray-400">
-                      过期时间
+                      过期时间 (本地时间)
                     </div>
                     <div className="font-mono text-sm">
-                      {expiryDate.toLocaleDateString('zh-CN', {
-                        year: 'numeric',
-                        month: '2-digit',
-                        day: '2-digit',
-                        hour: '2-digit',
-                        minute: '2-digit'
-                      })}
+                      {TimeUtils.utcToLocalDisplay(code.expiredAt)}
                     </div>
                   </div>
                 </div>

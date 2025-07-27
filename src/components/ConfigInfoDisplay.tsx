@@ -1,4 +1,5 @@
 import { GameConfig } from '@/types/config';
+import { TimeUtils } from '@/lib/time-utils';
 
 interface ConfigInfoDisplayProps {
   config: GameConfig;
@@ -7,10 +8,9 @@ interface ConfigInfoDisplayProps {
 }
 
 export default function ConfigInfoDisplay({ config, showAllCodes }: ConfigInfoDisplayProps) {
-  // 计算过期和有效的兑换码
-  const now = new Date();
-  const validCodes = config.redeemCodes.filter(code => new Date(code.expiredAt) > now);
-  const expiredCodes = config.redeemCodes.filter(code => new Date(code.expiredAt) <= now);
+  // 计算过期和有效的兑换码 - 使用 UTC 时间比较
+  const validCodes = config.redeemCodes.filter(code => !TimeUtils.isExpired(code.expiredAt));
+  const expiredCodes = config.redeemCodes.filter(code => TimeUtils.isExpired(code.expiredAt));
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -153,8 +153,8 @@ export default function ConfigInfoDisplay({ config, showAllCodes }: ConfigInfoDi
         ) : (
           <div className="space-y-2">
             {(showAllCodes ? config.redeemCodes : validCodes).map((code, index) => {
-              const isExpired = new Date(code.expiredAt) <= now;
-              const expiryDate = new Date(code.expiredAt);
+              const isExpired = TimeUtils.isExpired(code.expiredAt);
+              const timeUntilExpiry = TimeUtils.getTimeUntilExpiry(code.expiredAt);
 
               return (
                 <div
@@ -178,22 +178,16 @@ export default function ConfigInfoDisplay({ config, showAllCodes }: ConfigInfoDi
                           ? 'text-red-600 dark:text-red-400'
                           : 'text-green-600 dark:text-green-400'
                       }`}>
-                        {isExpired ? '已过期' : '有效'}
+                        {timeUntilExpiry}
                       </div>
                     </div>
                   </div>
                   <div className="text-right">
                     <div className="text-sm text-gray-600 dark:text-gray-400">
-                      过期时间
+                      过期时间 (本地时间)
                     </div>
                     <div className="font-mono text-sm">
-                      {expiryDate.toLocaleDateString('zh-CN', {
-                        year: 'numeric',
-                        month: '2-digit',
-                        day: '2-digit',
-                        hour: '2-digit',
-                        minute: '2-digit'
-                      })}
+                      {TimeUtils.utcToLocalDisplay(code.expiredAt)}
                     </div>
                   </div>
                 </div>

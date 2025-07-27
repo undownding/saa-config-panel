@@ -2,6 +2,7 @@ import { GetObjectCommand, PutObjectCommand } from '@aws-sdk/client-s3';
 import { getS3Client, getS3Config } from './s3-client';
 import { GameConfig, ValidationResult } from '@/types/config';
 import { validateConfigWithClassValidator } from './validation';
+import { TimeUtils } from './time-utils';
 
 const CONFIG_KEY = 'config.json';
 
@@ -193,11 +194,8 @@ export function validateConfigLegacy(config: unknown): ValidationResult {
  * 过滤过期的兑换码
  */
 export function filterExpiredRedeemCodes(config: GameConfig): GameConfig {
-  const now = new Date();
-  
   const validCodes = config.redeemCodes.filter(code => {
-    const expiredAt = new Date(code.expiredAt);
-    return expiredAt > now;
+    return !TimeUtils.isExpired(code.expiredAt);
   });
 
   return {

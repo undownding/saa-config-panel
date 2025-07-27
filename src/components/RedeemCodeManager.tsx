@@ -34,6 +34,8 @@ export default function RedeemCodeManager({ config, onUpdate, showAllCodes }: Re
 
   const startEditing = () => {
     setEditingCodes([...config.redeemCodes]);
+    // 设置新兑换码的默认过期时间（本地时间格式）
+    setNewCode({ code: '', expiredAt: getDefaultExpiryDate() });
     setIsEditing(true);
     // 重新加载保存的 token
     const savedToken = getSavedBearerToken();
@@ -56,7 +58,8 @@ export default function RedeemCodeManager({ config, onUpdate, showAllCodes }: Re
         code: newCode.code.trim(),
         expiredAt: utcExpiredAt
       }]);
-      setNewCode({ code: '', expiredAt: '' });
+      // 重置表单，但保持默认过期时间
+      setNewCode({ code: '', expiredAt: getDefaultExpiryDate() });
     }
   };
 

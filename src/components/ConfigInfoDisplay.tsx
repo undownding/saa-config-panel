@@ -24,7 +24,7 @@ export default function ConfigInfoDisplay({ config, showAllCodes }: ConfigInfoDi
           <div className="flex justify-between items-center py-2 border-b border-gray-200 dark:border-gray-700">
             <span className="text-gray-600 dark:text-gray-400">任务名称</span>
             <span className="font-mono font-semibold text-purple-600 dark:text-purple-400">
-              {config.questName}
+              {config.updateData.questName}
             </span>
           </div>
           <div className="flex justify-between items-center py-2 border-b border-gray-200 dark:border-gray-700">

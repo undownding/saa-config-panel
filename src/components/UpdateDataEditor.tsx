@@ -13,21 +13,21 @@ export default function UpdateDataEditor({ config, onUpdate }: UpdateDataEditorP
   const [isEditing, setIsEditing] = useState(false);
   const [editingData, setEditingData] = useState<UpdateData>(config.updateData);
   const [editingGameVersion, setEditingGameVersion] = useState<string>(config.version);
-  const [editingTaskName, setEditingTaskName] = useState<string>(config.questName);
+  const [editingTaskName, setEditingTaskName] = useState<string>(config.updateData.questName);
   const [token, setToken] = useState('');
   const [loading, setLoading] = useState(false);
 
   const startEditing = () => {
     setEditingData({ ...config.updateData });
     setEditingGameVersion(config.version);
-    setEditingTaskName(config.questName);
+    setEditingTaskName(config.updateData.questName);
     setIsEditing(true);
   };
 
   const cancelEditing = () => {
     setEditingData(config.updateData);
     setEditingGameVersion(config.version);
-    setEditingTaskName(config.questName);
+    setEditingTaskName(config.updateData.questName);
     setIsEditing(false);
     setToken('');
   };
@@ -55,9 +55,11 @@ export default function UpdateDataEditor({ config, onUpdate }: UpdateDataEditorP
     setLoading(true);
     const newConfig = {
       ...config,
-      questName: editingTaskName,
       version: editingGameVersion,
-      updateData: editingData
+      updateData: {
+        ...editingData,
+        questName: editingTaskName
+      }
     };
 
     const success = await onUpdate(newConfig, token.trim());
@@ -144,7 +146,7 @@ export default function UpdateDataEditor({ config, onUpdate }: UpdateDataEditorP
               />
             ) : (
               <div className="px-3 py-2 bg-gray-50 dark:bg-gray-700 rounded-md font-mono font-semibold">
-                {config.questName}
+                {config.updateData.questName}
               </div>
             )}
           </div>

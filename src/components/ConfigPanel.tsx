@@ -139,7 +139,7 @@ export default function ConfigPanel() {
           {config && (
             <div className="text-sm text-gray-600 dark:text-gray-400 flex items-center gap-4">
               <div>
-                任务名称: <span className="font-mono font-semibold">{config.questName}</span>
+                任务名称: <span className="font-mono font-semibold">{config.updateData.questName}</span>
               </div>
               <div>
                 SAA版本: <span className="font-mono font-semibold">{config.version}</span>

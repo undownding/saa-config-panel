@@ -1,8 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { GameConfig, UpdateData, Position } from '@/types/config';
 import LoadingSpinner from './LoadingSpinner';
+import { getSavedBearerToken, saveBearerToken } from '@/lib/token-storage';
 
 interface UpdateDataEditorProps {
   config: GameConfig;
@@ -17,11 +18,24 @@ export default function UpdateDataEditor({ config, onUpdate }: UpdateDataEditorP
   const [token, setToken] = useState('');
   const [loading, setLoading] = useState(false);
 
+  // 组件挂载时加载保存的 token
+  useEffect(() => {
+    const savedToken = getSavedBearerToken();
+    if (savedToken) {
+      setToken(savedToken);
+    }
+  }, []);
+
   const startEditing = () => {
     setEditingData({ ...config.updateData });
     setEditingGameVersion(config.version);
     setEditingTaskName(config.updateData.questName);
     setIsEditing(true);
+    // 重新加载保存的 token
+    const savedToken = getSavedBearerToken();
+    if (savedToken) {
+      setToken(savedToken);
+    }
   };
 
   const cancelEditing = () => {
@@ -53,6 +67,10 @@ export default function UpdateDataEditor({ config, onUpdate }: UpdateDataEditorP
     }
 
     setLoading(true);
+
+    // 保存 token 到 localStorage
+    saveBearerToken(token.trim());
+
     const newConfig = {
       ...config,
       version: editingGameVersion,

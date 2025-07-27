@@ -1,8 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { GameConfig, RedeemCode } from '@/types/config';
 import LoadingSpinner from './LoadingSpinner';
+import { getSavedBearerToken, saveBearerToken } from '@/lib/token-storage';
 
 interface RedeemCodeManagerProps {
   config: GameConfig;
@@ -23,9 +24,22 @@ export default function RedeemCodeManager({ config, onUpdate, showAllCodes }: Re
   const expiredCodes = config.redeemCodes.filter(code => new Date(code.expiredAt) <= now);
   const displayCodes = showAllCodes ? config.redeemCodes : validCodes;
 
+  // 组件挂载时加载保存的 token
+  useEffect(() => {
+    const savedToken = getSavedBearerToken();
+    if (savedToken) {
+      setToken(savedToken);
+    }
+  }, []);
+
   const startEditing = () => {
     setEditingCodes([...config.redeemCodes]);
     setIsEditing(true);
+    // 重新加载保存的 token
+    const savedToken = getSavedBearerToken();
+    if (savedToken) {
+      setToken(savedToken);
+    }
   };
 
   const cancelEditing = () => {
@@ -58,6 +72,10 @@ export default function RedeemCodeManager({ config, onUpdate, showAllCodes }: Re
     }
 
     setLoading(true);
+
+    // 保存 token 到 localStorage
+    saveBearerToken(token.trim());
+
     const newConfig = {
       ...config,
       redeemCodes: editingCodes
@@ -85,7 +103,7 @@ export default function RedeemCodeManager({ config, onUpdate, showAllCodes }: Re
           <span>🎫</span>
           兑换码管理
         </h2>
-        
+
         {!isEditing ? (
           <button
             onClick={startEditing}

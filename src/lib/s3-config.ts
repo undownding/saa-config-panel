@@ -1,5 +1,4 @@
-import { GetObjectCommand, PutObjectCommand } from '@aws-sdk/client-s3';
-import { getS3Client, getS3Config } from './s3-client';
+import { StorageClientFactory } from './storage-provider';
 import { GameConfig, ValidationResult } from '@/types/config';
 import { validateConfigWithClassValidator } from './validation';
 import { TimeUtils } from './time-utils';
@@ -7,85 +6,79 @@ import { TimeUtils } from './time-utils';
 const CONFIG_KEY = 'config.json';
 
 /**
- * 从 S3 获取配置文件
+ * 从存储获取配置文件
  */
 export async function getConfigFromS3(): Promise<GameConfig> {
-  const s3Client = getS3Client();
-  const s3Config = getS3Config();
+  const storageClient = StorageClientFactory.getClient();
 
   try {
-    const command = new GetObjectCommand({
-      Bucket: s3Config.bucketName,
-      Key: CONFIG_KEY,
-    });
+    // 读取配置文件内容
+    const bodyString = await storageClient.getObject(CONFIG_KEY);
 
-    const response = await s3Client.send(command);
-    
-    if (!response.Body) {
-      throw new Error('Empty response body from S3');
+    // 解析 JSON
+    let config: GameConfig;
+    try {
+      config = JSON.parse(bodyString);
+    } catch (error) {
+      throw new Error('Invalid config format: Unable to parse JSON');
     }
 
-    // 读取响应体内容
-    const bodyString = await response.Body.transformToString();
-    
-    // 解析 JSON
-    const config = JSON.parse(bodyString) as GameConfig;
-    
     // 验证配置格式
-    const validation = await validateConfig(config);
-    if (!validation.isValid) {
-      throw new Error(`Invalid config format: ${validation.errors.join(', ')}`);
+    const validationResult: ValidationResult = await validateConfigWithClassValidator(config);
+
+    if (!validationResult.isValid) {
+      const errorMessages = validationResult.errors.join(', ');
+      throw new Error(`Invalid config format: ${errorMessages}`);
     }
 
     return config;
   } catch (error) {
-    console.error('Error reading config from S3:', error);
-    
     if (error instanceof Error) {
-      if (error.name === 'NoSuchKey') {
-        throw new Error('Config file not found in S3');
+      // 如果是我们抛出的格式错误，直接重新抛出
+      if (error.message.includes('Invalid config format')) {
+        throw error;
       }
-      throw error;
+
+      // 检查是否为文件不存在错误
+      if (error.message.includes('not found') || error.message.includes('NoSuchKey')) {
+        throw new Error('Config file not found');
+      }
     }
-    
-    throw new Error('Unknown error occurred while reading config from S3');
+
+    console.error('Error getting config from storage:', error);
+    throw new Error(`Failed to get config: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
 
 /**
- * 将配置保存到 S3
+ * 保存配置文件到存储
  */
 export async function saveConfigToS3(config: GameConfig): Promise<GameConfig> {
-  const s3Client = getS3Client();
-  const s3Config = getS3Config();
-
-  // 验证配置格式
-  const validation = await validateConfig(config);
-  if (!validation.isValid) {
-    throw new Error(`Invalid config format: ${validation.errors.join(', ')}`);
-  }
+  const storageClient = StorageClientFactory.getClient();
 
   try {
+    // 验证配置格式
+    const validationResult: ValidationResult = await validateConfigWithClassValidator(config);
+
+    if (!validationResult.isValid) {
+      const errorMessages = validationResult.errors.join(', ');
+      throw new Error(`Invalid config format: ${errorMessages}`);
+    }
+
+    // 转换为 JSON 字符串
     const configJson = JSON.stringify(config, null, 2);
 
-    const command = new PutObjectCommand({
-      Bucket: s3Config.bucketName,
-      Key: CONFIG_KEY,
-      Body: configJson,
-      ContentType: 'application/json',
-    });
+    // 保存到存储
+    await storageClient.putObject(CONFIG_KEY, configJson);
 
-    await s3Client.send(command);
-    
     return config;
   } catch (error) {
-    console.error('Error saving config to S3:', error);
-    
-    if (error instanceof Error) {
+    if (error instanceof Error && error.message.includes('Invalid config format')) {
       throw error;
     }
-    
-    throw new Error('Unknown error occurred while saving config to S3');
+
+    console.error('Error saving config to storage:', error);
+    throw new Error(`Failed to save config: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
 
@@ -125,23 +118,23 @@ export function validateConfigLegacy(config: unknown): ValidationResult {
     errors.push('updateData must be an object');
   } else {
     const updateData = configData.updateData as Record<string, unknown>;
-    
+
     if (typeof updateData.onlineWidth !== 'number') {
       errors.push('updateData.onlineWidth must be a number');
     }
-    
+
     if (typeof updateData.onlineHeight !== 'number') {
       errors.push('updateData.onlineHeight must be a number');
     }
-    
+
     if (typeof updateData.linkId !== 'number') {
       errors.push('updateData.linkId must be a number');
     }
-    
+
     if (typeof updateData.linkCatId !== 'number') {
       errors.push('updateData.linkCatId must be a number');
     }
-    
+
     // 验证 stuff 和 chasm 位置
     ['stuff', 'chasm'].forEach(positionName => {
       const position = updateData[positionName];
@@ -170,7 +163,7 @@ export function validateConfigLegacy(config: unknown): ValidationResult {
         if (!codeData.code || typeof codeData.code !== 'string') {
           errors.push(`redeemCodes[${index}].code must be a string`);
         }
-        
+
         if (!codeData.expiredAt || typeof codeData.expiredAt !== 'string') {
           errors.push(`redeemCodes[${index}].expiredAt must be a string`);
         } else {

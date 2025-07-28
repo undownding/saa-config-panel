@@ -1,10 +1,10 @@
 import { S3Client, S3ClientConfig } from '@aws-sdk/client-s3';
-import { S3Config } from '@/types/s3';
+import { StorageConfig } from '@/types/s3';
 
 /**
  * 获取 S3 配置
  */
-export function getS3Config(): S3Config {
+export function getS3Config(): StorageConfig {
   const accessKeyId = process.env.AWS_ACCESS_KEY_ID;
   const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY;
   const region = process.env.AWS_REGION;
@@ -18,6 +18,7 @@ export function getS3Config(): S3Config {
   }
 
   return {
+    provider: 'aws',
     accessKeyId,
     secretAccessKey,
     region,

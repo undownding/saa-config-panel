@@ -1,0 +1,15 @@
+{
+  "scripts": {
+    "dev": "next dev --turbopack",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
+    "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
+    "deploy:aws": "STORAGE_PROVIDER=aws npm run deploy",
+    "deploy:r2": "STORAGE_PROVIDER=r2 npm run deploy",
+    "cf-typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts",
+    "check-storage": "node scripts/check-storage.js"
+  }
+}
+

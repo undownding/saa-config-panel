@@ -2,6 +2,19 @@ main = ".open-next/worker.js"
 name = "saa-config-panel"
 compatibility_date = "2025-03-25"
 compatibility_flags = ["nodejs_compat"]
+
 [assets]
 directory = ".open-next/assets"
 binding = "ASSETS"
+
+# R2 存储绑定配置
+[[r2_buckets]]
+binding = "R2_BUCKET"
+bucket_name = "saa-config"
+preview_bucket_name = "saa-config"
+
+# 环境变量配置
+[vars]
+STORAGE_PROVIDER = "r2"
+R2_BUCKET_NAME = "saa-config"
+R2_BINDING_NAME = "saa-config"

@@ -6,15 +6,19 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
+    "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
+    "cf-typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.850.0",
+    "@opennextjs/cloudflare": "^1.6.1",
     "@types/moment": "^2.11.29",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.2",
     "moment": "^2.30.1",
-    "next": "15.4.4",
+    "next": "15.3.3",
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "reflect-metadata": "^0.2.2"
@@ -30,6 +34,8 @@
     "eslint-config-next": "15.4.4",
     "tailwindcss": "^4",
     "ts-node": "^10.9.2",
-    "typescript": "^5"
-  }
+    "typescript": "^5",
+    "wrangler": "^4.26.0"
+  },
+  "packageManager": "yarn@1.22.22+sha1.ac34549e6aa8e7ead463a7407e1c7390f61a6610"
 }

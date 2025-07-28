@@ -221,7 +221,7 @@ export class StorageClientFactory {
 
     // 在 Cloudflare Workers 环境中，R2 bucket 通过全局变量访问
     // @ts-expect-error - Cloudflare Workers 环境变量在运行时可用
-    const r2Bucket = globalThis[bindingName] as R2Bucket;
+    const r2Bucket = process.env[bindingName] as R2Bucket;
 
     if (!r2Bucket) {
       throw new Error(`R2 bucket binding '${bindingName}' not found. Make sure it's configured in wrangler.toml`);

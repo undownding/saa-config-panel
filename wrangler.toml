@@ -17,4 +17,3 @@ preview_bucket_name = "saa-config"
 [vars]
 STORAGE_PROVIDER = "r2"
 R2_BUCKET_NAME = "saa-config"
-R2_BINDING_NAME = "saa-config"

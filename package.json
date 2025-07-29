@@ -14,7 +14,6 @@
   "dependencies": {
     "@aws-sdk/client-s3": "^3.574.0",
     "@opennextjs/cloudflare": "^1.6.1",
-    "@types/moment": "^2.11.29",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.2",
     "moment": "^2.30.1",
@@ -26,6 +25,7 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4",
+    "@types/moment": "^2.11.29",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
@@ -36,6 +36,5 @@
     "ts-node": "^10.9.2",
     "typescript": "^5",
     "wrangler": "^4.26.0"
-  },
-  "packageManager": "yarn@1.22.22+sha1.ac34549e6aa8e7ead463a7407e1c7390f61a6610"
+  }
 }

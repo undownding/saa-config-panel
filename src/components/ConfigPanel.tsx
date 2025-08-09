@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { GameConfig } from '@/types/config';
+import {ConfigResponse, GameConfig} from '@/types/config';
 import ConfigInfoDisplay from './ConfigInfoDisplay';
 import RedeemCodeManager from './RedeemCodeManager';
 import UpdateDataEditor from './UpdateDataEditor';
@@ -28,7 +28,7 @@ export default function ConfigPanel() {
         throw new Error(`获取配置失败: ${response.status} ${response.statusText}`);
       }
 
-      const data = await response.json();
+      const data = await response.json<ConfigResponse>();
 
       if (data.status === 'error') {
         throw new Error(data.message || '获取配置失败');
@@ -64,7 +64,7 @@ export default function ConfigPanel() {
         throw new Error(`更新配置失败: ${response.status} ${response.statusText}`);
       }
 
-      const data = await response.json();
+      const data = await response.json<ConfigResponse>();
 
       if (data.status === 'error') {
         throw new Error(data.message || '更新配置失败');

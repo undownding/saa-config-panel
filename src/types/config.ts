@@ -4,7 +4,7 @@ import {
     IsArray,
     ValidateNested,
     IsDateString,
-    IsNotEmpty
+    IsNotEmpty, IsOptional
 } from 'class-validator';
 import {Type} from 'class-transformer';
 
@@ -81,7 +81,7 @@ export class GameConfig {
 // API 响应类型
 export interface ConfigResponse {
     status: 'ok' | 'error';
-    data?: GameConfig;
+    data: GameConfig;
     message?: string;
     timestamp: string;
 }

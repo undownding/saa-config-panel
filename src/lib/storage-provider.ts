@@ -185,15 +185,15 @@ export class StorageClientFactory {
    * 创建 S3 客户端
    */
   private static createS3Client(): S3StorageClient {
-    const accessKeyId = process.env.AWS_ACCESS_KEY_ID;
-    const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY;
-    const region = process.env.AWS_REGION;
-    const bucketName = process.env.AWS_S3_BUCKET_NAME;
-    const endpoint = process.env.AWS_S3_ENDPOINT_URL;
+    const accessKeyId = process.env.S3_ACCESS_KEY_ID;
+    const secretAccessKey = process.env.S3_SECRET_ACCESS_KEY;
+    const region = process.env.S3_REGION;
+    const bucketName = process.env.S3_BUCKET_NAME;
+    const endpoint = process.env.S3_ENDPOINT_URL;
 
     if (!accessKeyId || !secretAccessKey || !region || !bucketName) {
       throw new Error(
-        'Missing required S3 environment variables. Please check AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_REGION, and AWS_S3_BUCKET_NAME.'
+        'Missing required S3 environment variables. Please check S3_ACCESS_KEY_ID, S3_SECRET_ACCESS_KEY, S3_REGION, and S3_BUCKET_NAME.'
       );
     }
 

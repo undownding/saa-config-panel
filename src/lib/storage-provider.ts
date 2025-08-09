@@ -55,9 +55,9 @@ export class S3StorageClient implements IStorageClient {
 
     if (config.endpoint) {
       clientConfig.endpoint = config.endpoint;
-      if (!config.endpoint.includes('amazonaws.com')) {
-        clientConfig.forcePathStyle = true;
-      }
+      // if (!config.endpoint.includes('amazonaws.com')) {
+      //   clientConfig.forcePathStyle = true;
+      // }
     }
 
     this.s3Client = new S3Client(clientConfig);

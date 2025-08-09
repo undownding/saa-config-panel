@@ -2,6 +2,9 @@ main = ".open-next/worker.js"
 name = "saa-config-panel"
 compatibility_date = "2025-03-25"
 compatibility_flags = ["nodejs_compat"]
+secrets_store_secrets = [
+    { binding = "AUTH_BEARER_TOKEN", store_id= "d3e3ceb8d53046ccbafa2d817fc20039", secret_name = "AUTH_BEARER_TOKEN" }
+]
 
 [assets]
 directory = ".open-next/assets"
@@ -17,7 +20,3 @@ preview_bucket_name = "saa-config"
 [vars]
 STORAGE_PROVIDER = "r2"
 R2_BUCKET_NAME = "saa-config"
-
-secrets_store_secrets = [
-    { binding = "AUTH_BEARER_TOKE", store_id= "d3e3ceb8d53046ccbafa2d817fc20039", secret_name = "AUTH_BEARER_TOKEN" }
-]

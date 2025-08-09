@@ -4,8 +4,8 @@ import {getCloudflareContext} from "@opennextjs/cloudflare";
 /**
  * 获取授权 Token
  */
-export function getAuthToken(): string {
-  const token = getCloudflareContext().env.secrets_store_secrets[0].secret_name
+export async function getAuthToken(): Promise<string> {
+  const token = (await getCloudflareContext()?.env?.AUTH_BEARER_TOKEN?.get())
       || process.env.AUTH_BEARER_TOKEN;
 
   if (!token) {
@@ -37,7 +37,7 @@ export function extractBearerToken(request: NextRequest): string | null {
 /**
  * 验证 Bearer Token
  */
-export function verifyBearerToken(request: NextRequest): boolean {
+export async function verifyBearerToken(request: NextRequest): Promise<boolean> {
   try {
     const providedToken = extractBearerToken(request);
 
@@ -45,7 +45,7 @@ export function verifyBearerToken(request: NextRequest): boolean {
       return false;
     }
 
-    const expectedToken = getAuthToken();
+    const expectedToken = await getAuthToken();
 
     return providedToken === expectedToken;
   } catch (error) {
